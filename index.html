@@ -13,6 +13,7 @@
             --surface-color: #1e1e1e;
             --primary-color: #6200ea;
             --primary-variant-color: #3700b3;
+            --secondary-button-color: #424242;
             --on-primary-color: #ffffff;
             --on-surface-color: #e0e0e0;
             --on-surface-variant-color: #9e9e9e;
@@ -52,7 +53,7 @@
         
         h2 {
             font-size: 1.25rem;
-            margin-bottom: 1.5rem;
+            margin-bottom: 0.5rem;
             text-align: center;
             font-weight: 600;
         }
@@ -74,6 +75,14 @@
             align-items: center;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
+        
+        .instruction-text {
+            font-size: 0.875rem;
+            color: var(--on-surface-variant-color);
+            text-align: center;
+            margin-bottom: 1rem;
+            min-height: 2.5rem; /* Reserve space */
+        }
 
         .image-placeholder {
             width: 100%;
@@ -85,7 +94,6 @@
             align-items: center;
             position: relative;
             overflow: hidden;
-            margin-bottom: 1.5rem;
             background-color: rgba(0,0,0,0.2);
             cursor: pointer;
             transition: border-color 0.2s ease, background-color 0.2s ease;
@@ -115,6 +123,13 @@
         .file-input {
             display: none;
         }
+        
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            width: 100%;
+            margin-top: auto;
+        }
 
         .button {
             background-color: var(--primary-color);
@@ -130,11 +145,19 @@
             text-align: center;
         }
 
-        .button:hover {
+        .button:hover:not(:disabled) {
             background-color: var(--primary-variant-color);
         }
         
-        #try-on-button:disabled {
+        .button.secondary {
+            background-color: var(--secondary-button-color);
+        }
+        
+        .button.secondary:hover:not(:disabled) {
+            background-color: var(--border-color);
+        }
+
+        .button:disabled {
             background-color: var(--border-color);
             cursor: not-allowed;
             color: var(--on-surface-variant-color);
@@ -189,18 +212,24 @@
                 <img id="person-preview" src="" alt="Person preview" class="preview-image hidden" aria-hidden="true">
                 <span id="person-prompt-text" class="prompt-text">Click or drag image here</span>
             </div>
+            <div class="button-group" style="margin-top: 1.5rem;">
+               <label for="person-upload" class="button">Choose File</label>
+            </div>
             <input type="file" id="person-upload" accept="image/*" class="file-input" aria-label="Upload an image of a person">
-            <label for="person-upload" class="button">Choose File</label>
         </section>
 
         <section class="card" id="result-card">
             <h2>Result</h2>
+             <p class="instruction-text">Your generated image will appear below. Use the download button to save it.</p>
             <div class="image-placeholder" id="result-placeholder">
                 <img id="result-image" src="" alt="Generated try-on result" class="preview-image hidden" aria-hidden="true">
                 <div class="loader hidden" id="loader" role="status" aria-label="Loading result"></div>
                 <span id="result-prompt-text" class="prompt-text">Your result will appear here</span>
             </div>
-            <button id="try-on-button" class="button" disabled>Try On</button>
+            <div class="button-group">
+                <button id="try-on-button" class="button" disabled>Try On</button>
+                <button id="download-button" class="button secondary" disabled>Download Image</button>
+            </div>
         </section>
 
         <section class="card" id="clothing-card">
@@ -209,8 +238,10 @@
                 <img id="clothing-preview" src="" alt="Clothing preview" class="preview-image hidden" aria-hidden="true">
                 <span id="clothing-prompt-text" class="prompt-text">Click or drag image here</span>
             </div>
+             <div class="button-group" style="margin-top: 1.5rem;">
+                <label for="clothing-upload" class="button">Choose File</label>
+            </div>
             <input type="file" id="clothing-upload" accept="image/*" class="file-input" aria-label="Upload an image of a clothing item">
-            <label for="clothing-upload" class="button">Choose File</label>
         </section>
     </main>
     <script type="module" src="/index.js"></script>

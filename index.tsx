@@ -22,6 +22,7 @@ const clothingPromptText = document.getElementById('clothing-prompt-text') as HT
 const clothingPlaceholder = document.getElementById('clothing-placeholder') as HTMLDivElement;
 
 const tryOnButton = document.getElementById('try-on-button') as HTMLButtonElement;
+const downloadButton = document.getElementById('download-button') as HTMLButtonElement;
 const resultImage = document.getElementById('result-image') as HTMLImageElement;
 const resultPromptText = document.getElementById('result-prompt-text') as HTMLSpanElement;
 const loader = document.getElementById('loader') as HTMLDivElement;
@@ -146,6 +147,7 @@ const setLoadingState = (loading: boolean) => {
     resultPromptText.classList.add('hidden');
     tryOnButton.disabled = true;
     tryOnButton.textContent = 'Generating...';
+    downloadButton.disabled = true;
   } else {
     loader.classList.add('hidden');
     tryOnButton.textContent = 'Try On';
@@ -193,6 +195,7 @@ const handleTryOn = async () => {
       resultImage.classList.remove('hidden');
       resultImage.setAttribute('aria-hidden', 'false');
       resultPromptText.classList.add('hidden');
+      downloadButton.disabled = false; // Enable download on success
     } else {
       throw new Error("The model did not return an image. Please try again with different images.");
     }
@@ -200,15 +203,40 @@ const handleTryOn = async () => {
     console.error("Error during virtual try-on:", error);
     resultPromptText.textContent = `Error: ${error instanceof Error ? error.message : 'An unknown error occurred.'}`;
     resultPromptText.classList.remove('hidden');
+    downloadButton.disabled = true; // Ensure it's disabled on error
   } finally {
     setLoadingState(false);
   }
+};
+
+/**
+ * Handles the download of the generated image.
+ */
+const handleDownload = () => {
+    if (!resultImage.src || resultImage.classList.contains('hidden')) {
+        console.error("No result image available to download.");
+        return;
+    }
+
+    const link = document.createElement('a');
+    link.href = resultImage.src;
+    
+    // Create a filename from mime type
+    const mimeType = resultImage.src.match(/data:(.*);base64,/)?.[1] || 'image/png';
+    const extension = mimeType.split('/')[1] || 'png';
+    link.download = `virtual-try-on-${Date.now()}.${extension}`;
+
+    // Trigger download
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 };
 
 // Event Listeners
 personUploadInput.addEventListener('change', (e) => handleFileInputChange(e, 'person'));
 clothingUploadInput.addEventListener('change', (e) => handleFileInputChange(e, 'clothing'));
 tryOnButton.addEventListener('click', handleTryOn);
+downloadButton.addEventListener('click', handleDownload);
 
 // Setup Upload Areas
 setupUploadArea(personPlaceholder, personUploadInput, 'person');
